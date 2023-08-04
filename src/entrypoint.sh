@@ -3,6 +3,32 @@
 # Exit script in case of error
 set -e
 
+# Temporary fix to https://github.com/GeoNode/geonode/issues/11263
+if [[ ! -f ${GEOIP_PATH} ]];then
+    GEOIP_DB_URL="https://git.io/GeoLite2-City.mmdb"
+    if [[ `wget -S --spider ${GEOIP_DB_URL}  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then
+         wget --progress=bar:force:noscroll -c --tries=2 ${GEOIP_DB_URL} -O /mnt/volumes/statics/geoip.db
+    else
+        echo -e "URL : \e[1;31m ${GEOIP_DB_URL} does not exists \033[0m"
+    fi
+
+fi
+
+# Temporary fix to monitoring error due to startup
+function prepare_monitoring(){
+
+    PGPASSWORD=${GEONODE_DATABASE_PASSWORD} psql ${GEONODE_DATABASE} -U ${GEONODE_DATABASE_USER} -p 5432 -h ${DATABASE_HOST} -c " insert into monitoring_servicetype(name) values ('${MONITORING_SERVICE_NAME}') ON CONFLICT (nam
+e) DO NOTHING;"
+    PGPASSWORD=${GEONODE_DATABASE_PASSWORD} psql ${GEONODE_DATABASE} -U ${GEONODE_DATABASE_USER} -p 5432 -h ${DATABASE_HOST} -c " insert into monitoring_servicetype(name) values ('geoserver-hostgeonode') ON CONFLICT (name) DO
+ NOTHING;"
+    PGPASSWORD=${GEONODE_DATABASE_PASSWORD} psql ${GEONODE_DATABASE} -U ${GEONODE_DATABASE_USER} -p 5432 -h ${DATABASE_HOST} -c " insert into monitoring_servicetype(name) values ('geoserver-hostgeoserver') ON CONFLICT (name)
+DO NOTHING;"
+    PGPASSWORD=${GEONODE_DATABASE_PASSWORD} psql ${GEONODE_DATABASE} -U ${GEONODE_DATABASE_USER} -p 5432 -h ${DATABASE_HOST} -c " insert into monitoring_servicetype(name) values ('default-geoserver') ON CONFLICT (name) DO NOT
+HING;"
+
+}
+
+
 INVOKE_LOG_STDOUT=${INVOKE_LOG_STDOUT:-FALSE}
 invoke () {
     if [ $INVOKE_LOG_STDOUT = 'true' ] || [ $INVOKE_LOG_STDOUT = 'True' ]
@@ -81,6 +107,7 @@ else
             echo "LOG INIT" > /usr/src/{{project_name}}/invoke.log
             invoke updategeoip
             invoke fixtures
+            prepare_monitoring
             invoke monitoringfixture
             invoke initialized
             invoke updateadmin
