@@ -6,14 +6,14 @@ export SITEURL=http://localhost:8000/
 export ALLOWED_HOSTS="['localhost',]"
 
 export GEONODE_INSTANCE_NAME=geonode
-export DJANGO_SETTINGS_MODULE={{project_name}}.settings
-export GEONODE_DATABASE={{project_name}}
+export DJANGO_SETTINGS_MODULE=gep.settings
+export GEONODE_DATABASE=gep
 export GEONODE_DATABASE_PASSWORD=geonode
-export GEONODE_GEODATABASE={{project_name}}_data
+export GEONODE_GEODATABASE=gep_data
 export GEONODE_GEODATABASE_PASSWORD=geonode
 
-export DATABASE_URL=postgis://{{project_name}}:geonode@localhost:5432/{{project_name}}
-export GEODATABASE_URL=postgis://{{project_name}}_data:geonode@localhost:5432/{{project_name}}_data
+export DATABASE_URL=postgis://gep:geonode@localhost:5432/gep
+export GEODATABASE_URL=postgis://gep_data:geonode@localhost:5432/gep_data
 export DEFAULT_BACKEND_DATASTORE=datastore
 
 export GEOSERVER_WEB_UI_LOCATION=http://localhost:8080/geoserver/

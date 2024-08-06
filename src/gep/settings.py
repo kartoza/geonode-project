@@ -29,22 +29,19 @@ except ImportError:
     from urllib2 import urlopen, Request
     from urlparse import urlparse, urlunparse
 # Load more settings from a file called local_settings.py if it exists
-try:
-    from {{ project_name }}.local_settings import *
-#    from geonode.local_settings import *
-except ImportError:
-    from geonode.settings import *
+
+from geonode.settings import *
 
 #
 # General Django development settings
 #
-PROJECT_NAME = "{{ project_name }}"
+PROJECT_NAME = "gep"
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith("/"):
     SITEURL = "{}/".format(SITEURL)
 
-SITENAME = os.getenv("SITENAME", "{{ project_name }}")
+SITENAME = os.getenv("SITENAME", "gep")
 
 # Defines the directory that contains the settings file as the LOCAL_ROOT
 # It is used for relative settings elsewhere.
@@ -162,3 +159,11 @@ if LDAP_ENABLED and "geonode_ldap" not in INSTALLED_APPS:
 
 # Add your specific LDAP configuration after this comment:
 # https://docs.geonode.org/en/master/advanced/contrib/#configuration
+
+# -----------------------------------
+# ---------- GEP SPECIFIED ----------
+# -----------------------------------
+GEP_TITLE = os.getenv('GEP_TITLE', 'Global Electrification Programme')
+GEP_SHORT_TITLE = os.getenv('GEP_SHORT_TITLE', 'GEP')
+SDI_TITLE = os.getenv('SDI_TITLE', 'Global Electrification Platform SDI')
+GEP_MENU_ENABLED = ast.literal_eval(os.getenv('GEP_MENU_ENABLED', 'True'))

@@ -555,7 +555,7 @@ def _update_geodb_connstring():
 
 
 def _localsettings():
-    settings = os.getenv("DJANGO_SETTINGS_MODULE", "{{ project_name }}.settings")
+    settings = os.getenv("DJANGO_SETTINGS_MODULE", "gep.settings")
     return settings
 
 

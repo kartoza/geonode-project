@@ -1,4 +1,4 @@
-# {{ project_name|title }}
+# global-electrification-platform
 
 GeoNode template project. Generates a django project with GeoNode support.
 
@@ -18,17 +18,17 @@ GeoNode template project. Generates a django project with GeoNode support.
 ## Quick Docker Start
 
   ```bash
-    python3.10 -m venv ~/.venvs/project_name
-    source ~/.venvs/{{ project_name }}/bin/activate
+    python3.10 -m venv ~/.venvs/gep
+    source ~/.venvs/gep/bin/activate
 
     pip install Django==4.2.9
 
-    mkdir ~/project_name
+    mkdir ~/gep
 
     GN_VERSION=master # Define the branch or tag you want to generate the project from
-    django-admin startproject --template=https://github.com/GeoNode/geonode-project/archive/refs/heads/$GN_VERSION.zip -e py,sh,md,rst,json,yml,ini,env,sample,properties -n monitoring-cron -n Dockerfile project_name ~/project_name
+    django-admin startproject --template=https://github.com/GeoNode/geonode-project/archive/refs/heads/$GN_VERSION.zip -e py,sh,md,rst,json,yml,ini,env,sample,properties -n monitoring-cron -n Dockerfile gep ~/gep
 
-    cd ~/project_name
+    cd ~/gep
     python create-envfile.py 
   ```
 `create-envfile.py` accepts the following arguments:
@@ -62,7 +62,7 @@ Available at
 
 ## Create a custom project
 
-**NOTE**: *You can call your geonode project whatever you like **except 'geonode'**. Follow the naming conventions for python packages (generally lower case with underscores (``_``). In the examples below, replace ``{{ project_name }}`` with whatever you would like to name your project.*
+**NOTE**: *You can call your geonode project whatever you like **except 'geonode'**. Follow the naming conventions for python packages (generally lower case with underscores (``_``). In the examples below, replace ``gep`` with whatever you would like to name your project.*
 
 To setup your project follow these instructions:
 
@@ -71,12 +71,12 @@ To setup your project follow these instructions:
     ```bash
     git clone https://github.com/GeoNode/geonode-project.git -b <your_branch>
     source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-    mkvirtualenv --python=/usr/bin/python3 {{ project_name }}
+    mkvirtualenv --python=/usr/bin/python3 gep
     pip install Django==3.2.16
 
-    django-admin startproject --template=./geonode-project -e py,sh,md,rst,json,yml,ini,env,sample,properties -n monitoring-cron -n Dockerfile {{ project_name }}
+    django-admin startproject --template=./geonode-project -e py,sh,md,rst,json,yml,ini,env,sample,properties -n monitoring-cron -n Dockerfile gep
 
-    cd {{ project_name }}
+    cd gep
     ```
 
 2. Create the .env file
@@ -244,7 +244,7 @@ docker system prune -a
 ### Run a Backup
 
 ```bash
-SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/backup.sh $BKP_FOLDER_NAME
+SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./gep/br/backup.sh $BKP_FOLDER_NAME
 ```
 
 - BKP_FOLDER_NAME:
@@ -261,13 +261,13 @@ SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/backup.sh $B
 e.g.:
 
 ```bash
-docker exec -it django4{{project_name}} sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/backup.sh $BKP_FOLDER_NAME'
+docker exec -it django4gep sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./gep/br/backup.sh $BKP_FOLDER_NAME'
 ```
 
 ### Run a Restore
 
 ```bash
-SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/restore.sh $BKP_FOLDER_NAME
+SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./gep/br/restore.sh $BKP_FOLDER_NAME
 ```
 
 - BKP_FOLDER_NAME:
@@ -284,7 +284,7 @@ SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/restore.sh $
 e.g.:
 
 ```bash
-docker exec -it django4{{project_name}} sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./{{project_name}}/br/restore.sh $BKP_FOLDER_NAME'
+docker exec -it django4gep sh -c 'SOURCE_URL=$SOURCE_URL TARGET_URL=$TARGET_URL ./gep/br/restore.sh $BKP_FOLDER_NAME'
 ```
 
 ## Recommended: Track your changes
