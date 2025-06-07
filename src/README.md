@@ -1,1 +1,1 @@
-# {{ project_name|title }}
+# Kartoza geonode

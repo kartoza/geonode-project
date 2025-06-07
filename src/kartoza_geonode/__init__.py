@@ -23,10 +23,10 @@ import os
 __version__ = (4, 2, 0, "dev", 0)
 
 
-default_app_config = "{{ project_name }}.apps.AppConfig"
+default_app_config = "kartoza_geonode.apps.AppConfig"
 
 
 def get_version():
-    import {{ project_name }}.version
+    import kartoza_geonode.version
 
-    return {{ project_name }}.version.get_version(__version__)
+    return kartoza_geonode.version.get_version(__version__)

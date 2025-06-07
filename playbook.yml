@@ -2,11 +2,11 @@
   hosts: production
   remote_user: ubuntu
   vars:
-    app_name: {{ project_name }}
+    app_name: kartoza_geonode
     github_user: geonode
     server_name: 0.0.0.0
     deploy_user: ubuntu
-    code_repository: https://github.com/-----/{{ project_name }}.git" # e.g., "https://github.com/GeoNode/{{ project_name }}.git"
+    code_repository: https://github.com/-----/kartoza_geonode.git" # e.g., "https://github.com/GeoNode/kartoza_geonode.git"
     branch_name: master
     virtualenv_dir: "/home/ubuntu/.venvs"
     site_url: "http://localhost:8000/" # The public url of the GeoNode instance
