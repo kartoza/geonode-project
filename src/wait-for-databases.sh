@@ -5,7 +5,7 @@ set -e
 host="$1"
 database="$2"
 user="$3"
-password="$3"
+password="$4"
 shift
 
 
