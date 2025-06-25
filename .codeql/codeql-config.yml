@@ -1,4 +1,0 @@
-languages: ${{ matrix.language }}
-
-paths-ignore: 
-  - src/kartoza_geonode/__init__.py

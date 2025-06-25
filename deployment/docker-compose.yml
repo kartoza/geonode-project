@@ -4,11 +4,15 @@ version: '3.9'
 x-common-django:
   &default-common-django
   image: ${COMPOSE_PROJECT_NAME}/geonode:${GEONODE_BASE_IMAGE_VERSION}
+  build:
+    context: ../
+    dockerfile: deployment/docker/Dockerfile
+    target: prod
   restart: unless-stopped
   env_file:
     - .env
   volumes:
-    - './src:/usr/src/kartoza_geonode'
+    - '../src:/usr/src/kartoza_geonode'
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
@@ -26,8 +30,7 @@ x-common-db:
   &default-common-db
   image: ${COMPOSE_PROJECT_NAME}/postgis:${POSTGRES_BASE_IMAGE_VERSION}
   build:
-    context: ./docker/postgresql
-    dockerfile: Dockerfile
+    context: ../deployment/postgresql/
     args:
       - BASE_IMAGE_VERSION=${POSTGRES_BASE_IMAGE_VERSION}
   command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
@@ -42,10 +45,7 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     <<: *default-common-django
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: django4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-django
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8001/"
       start_period: 60s
@@ -60,7 +60,7 @@ services:
   # Celery worker that executes celery tasks created by Django.
   celery:
     <<: *default-common-django
-    container_name: celery4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-celery
     depends_on:
       django:
         condition: service_healthy
@@ -73,11 +73,10 @@ services:
   geonode:
     image: ${COMPOSE_PROJECT_NAME}/nginx:${NGINX_BASE_IMAGE_VERSION}
     build:
-      context: ./docker/nginx
-      dockerfile: Dockerfile
+      context: ../deployment/nginx/
       args:
         - BASE_IMAGE_VERSION=${NGINX_BASE_IMAGE_VERSION}
-    container_name: nginx4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-nginx
     env_file:
       - .env
     environment:
@@ -94,7 +93,7 @@ services:
   # memcached service
   memcached:
     image: memcached:alpine
-    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-memcached
     command: memcached ${MEMCACHED_OPTIONS}
     restart: on-failure
     healthcheck:
@@ -108,11 +107,10 @@ services:
   letsencrypt:
     image: ${COMPOSE_PROJECT_NAME}/letsencrypt:${LETSENCRYPT_BASE_IMAGE_VERSION}
     build:
-      context: ./docker/letsencrypt
-      dockerfile: Dockerfile
+      context: ../deployment/letsencrypt
       args:
         - BASE_IMAGE_VERSION=${LETSENCRYPT_BASE_IMAGE_VERSION}
-    container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-letsencrypt
     env_file:
       - .env
     volumes:
@@ -123,11 +121,10 @@ services:
   geoserver:
     image: ${COMPOSE_PROJECT_NAME}/geoserver:${GEOSERVER_BASE_IMAGE_VERSION}
     build:
-      context: ./docker/geoserver
-      dockerfile: Dockerfile
+      context: ../deployment/geoserver
       args:
         - BASE_IMAGE_VERSION=${GEOSERVER_BASE_IMAGE_VERSION}
-    container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-geoserver
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
       start_period: 60s
@@ -154,11 +151,10 @@ services:
   data-dir-conf:
     image: ${COMPOSE_PROJECT_NAME}/geoserver_data:${GEOSERVER_DATA_BASE_IMAGE_VERSION}
     build:
-      context: ./docker/geoserver_data
-      dockerfile: Dockerfile
+      context: ../deployment/geoserver_data
       args:
         - BASE_IMAGE_VERSION=${GEOSERVER_DATA_BASE_IMAGE_VERSION}
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-gsconf
     entrypoint: sleep infinity
     volumes:
       - geoserver-data-dir:/geoserver_data/data
@@ -168,7 +164,7 @@ services:
 
   db-geonode:
     <<: *default-common-db
-    container_name: db4${COMPOSE_PROJECT_NAME}_geonode
+    container_name: ${COMPOSE_PROJECT_NAME}-db-geonode
     volumes:
       - db-geonode-data:/var/lib/postgresql/data
       - db-geonode-backups:/pg_backups
@@ -177,7 +173,7 @@ services:
 
   db-geodata:
     <<: *default-common-db
-    container_name: db4${COMPOSE_PROJECT_NAME}_geodata
+    container_name: ${COMPOSE_PROJECT_NAME}-db-geodata
     volumes:
       - db-geodata-data:/var/lib/postgresql/data
       - db-geodata-backups:/pg_backups
@@ -187,7 +183,7 @@ services:
   # Vanilla RabbitMQ service. This is needed by celery
   rabbitmq:
     image: rabbitmq:3-alpine
-    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+    container_name: ${COMPOSE_PROJECT_NAME}-rabbitmq
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     restart: unless-stopped

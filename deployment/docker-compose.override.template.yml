@@ -1,0 +1,50 @@
+version: '3.4'
+services:
+  # Our custom django application. It includes Geonode.
+  django:
+    volumes:
+      - ../src:/usr/src/kartoza_geonode
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
+      - data:/data
+      - tmp:/tmp
+
+  # Celery worker that executes celery tasks created by Django.
+  celery:
+    volumes:
+      - ../src:/usr/src/kartoza_geonode
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
+      - data:/data
+      - tmp:/tmp
+
+  # django application for development
+  dev:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+      target: dev
+    container_name: ${COMPOSE_PROJECT_NAME}-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ../src:/usr/src/kartoza_geonode
+      - statics:/mnt/volumes/statics
+      - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
+      - data:/data
+      - tmp:/tmp
+    depends_on:
+      db-geonode:
+        condition: service_healthy
+      db-geodata:
+        condition: service_healthy
+    entrypoint: [ ]
+    ports:
+      # for django test server
+      - "8000:8080"
+      # for ssh
+      - "8001:22"

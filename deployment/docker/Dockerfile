@@ -1,4 +1,4 @@
-FROM geonode/geonode-base:latest-ubuntu-22.04
+FROM geonode/geonode-base:latest-ubuntu-22.04 AS prod
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/kartoza_geonode
@@ -48,5 +48,34 @@ RUN apt-get autoremove --purge &&\
 # Export ports
 EXPOSE 8000
 
-# We provide no command or entrypoint as this image can be used to serve the django project or run celery tasks
-# ENTRYPOINT /usr/src/kartoza_geonode/entrypoint.sh
+
+FROM prod AS dev
+
+RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements-dev.txt
+RUN pip install --upgrade  -e .
+
+# This section taken on 2 July 2015 from
+# https://docs.docker.com/examples/running_ssh_service/
+# Sudo is needed by pycharm when it tries to pip install packages
+RUN apt-get update && apt-get install -y openssh-server sudo
+RUN mkdir -p /var/run/sshd
+RUN echo 'root:docker' | chpasswd
+RUN sed -i 's/^PermitRootLogin */#PermitRootLogin /' /etc/ssh/sshd_config
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+# --------------------------------------------------------
+# Open ports as needed
+# --------------------------------------------------------
+
+# Open port 8080 as we will be running our django dev server on
+EXPOSE 8080
+# Open port 22 as we will be using a remote interpreter from pycharm
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]

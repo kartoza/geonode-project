@@ -1,4 +1,6 @@
 PROJECT_ID := 'kartoza_geonode'
+export COMPOSE_FILE=deployment/docker-compose.yml:deployment/docker-compose.override.yml
+
 SHELL := /bin/bash
 
 rebuild:

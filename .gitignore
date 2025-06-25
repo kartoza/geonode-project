@@ -69,5 +69,6 @@ local_settings.py
 .vscode/
 .vagrant/
 Vagrantfile
-/.env
+.env
 celerybeat-schedule
+docker-compose.override.yml
