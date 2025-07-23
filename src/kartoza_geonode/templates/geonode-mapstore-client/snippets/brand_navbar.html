@@ -31,8 +31,14 @@
                     {% block left_menu %}
                     <ul class="gn-menu-list">
                         <li>
-                            <a href="/">
-                                <img src="{% static "/img/kartoza-logo-only.png" %}">
+                            <a href="/" style="display: flex; align-items: center; gap: 1rem">
+                                {% if site_preferences.favicon %}
+                                    <img src="{{ site_preferences.icon }}">
+                                {% else %}
+                                    <img src="{% static "/img/kartoza-logo-only.png" %}">
+                                {% endif %}
+
+                                <span style="color: var(--project-color); font-size: 1.5rem; font-weight: 600">{{ site_preferences.site_name }}</span>
                             </a>
                         </li>
                     </ul>

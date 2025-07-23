@@ -9,4 +9,13 @@
         <link rel="shortcut icon"
               href="{% static 'geonode/img/favicon.ico' %}"/>
     {% endif %}
+    <style>
+      :root {
+      {% if site_preferences.main_color %}
+        --project-color: {{ site_preferences.main_color }};
+      {% else %}
+        --project-color: #35a8e0;
+      {% endif %}
+      }
+    </style>
 {% endblock favicon %}

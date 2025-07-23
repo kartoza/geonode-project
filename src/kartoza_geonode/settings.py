@@ -18,9 +18,9 @@
 #
 #########################################################################
 
+import ast
 # Django settings for the GeoNode project.
 import os
-import ast
 
 try:
     from urllib.parse import urlparse, urlunparse
@@ -57,7 +57,7 @@ WSGI_APPLICATION = "{}.wsgi.application".format(PROJECT_NAME)
 LANGUAGE_CODE = os.getenv("LANGUAGE_CODE", "en")
 
 if PROJECT_NAME not in INSTALLED_APPS:
-    INSTALLED_APPS += (PROJECT_NAME,)
+    INSTALLED_APPS += (PROJECT_NAME, 'colorfield')
 
 # Location of url mappings
 ROOT_URLCONF = os.getenv("ROOT_URLCONF", "{}.urls".format(PROJECT_NAME))
@@ -65,8 +65,8 @@ ROOT_URLCONF = os.getenv("ROOT_URLCONF", "{}.urls".format(PROJECT_NAME))
 # Additional directories which hold static files
 # - Give priority to local geonode-project ones
 STATICFILES_DIRS = [
-    os.path.join(LOCAL_ROOT, "static"),
-] + STATICFILES_DIRS
+                       os.path.join(LOCAL_ROOT, "static"),
+                   ] + STATICFILES_DIRS
 
 # Location of locale files
 LOCALE_PATHS = (os.path.join(LOCAL_ROOT, "locale"),) + LOCALE_PATHS
@@ -86,13 +86,14 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s %(process)d "
-            "%(thread)d %(message)s"
+                      "%(thread)d %(message)s"
         },
         "simple": {
             "format": "%(message)s",
         },
     },
-    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
         "console": {
             "level": "ERROR",
@@ -145,9 +146,9 @@ CENTRALIZED_DASHBOARD_ENABLED = ast.literal_eval(
     os.getenv("CENTRALIZED_DASHBOARD_ENABLED", "False")
 )
 if (
-    CENTRALIZED_DASHBOARD_ENABLED
-    and USER_ANALYTICS_ENABLED
-    and "geonode_logstash" not in INSTALLED_APPS
+        CENTRALIZED_DASHBOARD_ENABLED
+        and USER_ANALYTICS_ENABLED
+        and "geonode_logstash" not in INSTALLED_APPS
 ):
     INSTALLED_APPS += ("geonode_logstash",)
 

@@ -1,5 +1,4 @@
 :root {
-  --project-color: #35a8e0;
   --gn-primary: var(--project-color);
   --gn-main-variant-bg: #fff;
   --gn-font-family-base: Arial, sans-serif;
@@ -187,6 +186,10 @@
 /* JUMBOTRON */
 #gn-hero {
   height: auto;
+}
+
+#gn-hero .jumbotron {
+  min-height: 500px;
 }
 
 .msgapi .gn-hero .jumbotron {
