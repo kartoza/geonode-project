@@ -1,0 +1,16 @@
+{% load static %}
+{% load i18n %}
+<footer class="gn-footer">
+    <div>
+        {% trans 'Powered by' %}
+    </div>
+    <a href="https://geonode.org/" target="_blank">
+        <img src="{% static "/mapstore/img/geonode-logo.svg" %}">
+    </a>
+    <div>
+        {% trans 'Website developed by' %}
+    </div>
+    <a href="https://kartoza.com/" target="_blank">
+        <img src="{% static "/img/kartoza-logo.png" %}">
+    </a>
+</footer>
