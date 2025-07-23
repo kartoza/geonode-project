@@ -81,6 +81,7 @@ services:
       - .env
     environment:
       - RESOLVER=127.0.0.11
+      - GEONODE_LB_PORT=8000
     ports:
       - "${HTTP_PORT}:80"
       - "${HTTPS_PORT}:443"
@@ -133,6 +134,8 @@ services:
       retries: 2
     env_file:
       - .env
+    environment:
+      - DATABASE_HOST=db-geodata
     ports:
       - "8080:8080"
     volumes:
