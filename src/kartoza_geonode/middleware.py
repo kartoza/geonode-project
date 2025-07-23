@@ -1,5 +1,9 @@
 import os
 
+from kartoza_geonode.models.preferences import SitePreferences
+from kartoza_geonode.serializer.site_preferences import (
+    SitePreferencesSerializer)
+
 DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -33,3 +37,11 @@ def project_version(request):
             }
         }
     return {}
+
+
+def site_preferences(request):
+    """ Site preferences middleware """
+    site_preferences = SitePreferences.load()
+    return {
+        'site_preferences': SitePreferencesSerializer(site_preferences).data,
+    }

@@ -1,0 +1,12 @@
+{% extends "geonode-mapstore-client/snippets/head.html" %}
+{% load static %}
+
+{% block favicon %}
+    {% if site_preferences.favicon %}
+        <link rel="shortcut icon"
+              href="{{ site_preferences.favicon }}"/>
+    {% else %}
+        <link rel="shortcut icon"
+              href="{% static 'geonode/img/favicon.ico' %}"/>
+    {% endif %}
+{% endblock favicon %}

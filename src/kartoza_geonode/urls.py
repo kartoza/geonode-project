@@ -18,13 +18,29 @@
 #
 #########################################################################
 
+from django.conf.urls.i18n import i18n_patterns
+from django.urls import re_path
+from django.views.generic.base import RedirectView
 from geonode.urls import urlpatterns
 
-"""
-# You can register your own urlpatterns here
-urlpatterns = [
-    url(r'^/?$',
-        homepage,
-        name='home'),
- ] + urlpatterns
-"""
+from kartoza_geonode.models.preferences import SitePreferences
+
+
+class SitePreferencesRedirectView(RedirectView):
+    """Redirect to preferences admin page."""
+
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Return absolute URL to redirect to."""
+        SitePreferences.load()
+        return '/admin/kartoza_geonode/sitepreferences/1/change/'
+
+
+urlpatterns = i18n_patterns(
+    re_path(
+        r'^admin/kartoza_geonode/sitepreferences/$',
+        SitePreferencesRedirectView.as_view(),
+        name='index'
+    )
+) + urlpatterns

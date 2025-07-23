@@ -165,4 +165,5 @@ if LDAP_ENABLED and "geonode_ldap" not in INSTALLED_APPS:
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     "kartoza_geonode.middleware.project_version",
+    "kartoza_geonode.middleware.site_preferences",
 ]
