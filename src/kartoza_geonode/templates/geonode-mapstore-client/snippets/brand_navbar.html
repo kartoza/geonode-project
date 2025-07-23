@@ -37,12 +37,7 @@
                         </li>
                     </ul>
                     {% endblock %}
-                    {% include './topbar_left.html' %}
-                </div>
-                <div class="gn-menu-content-center">
-                    {% block center_menu %}
-                        {% include './search_bar.html' with search_bar_id='gn-search-bar' %}
-                    {% endblock %}
+{#                    {% include './topbar_left.html' %}#}
                 </div>
                 <div class="gn-menu-content-right">
                     {% block right_menu %}
@@ -65,13 +60,18 @@
         {% endblock %}
     </div>
 </div>
-{#<div style="background: #eceded">#}
-{#     <nav id="gn-brand-subnavbar" class="gn-menu gn-menu-symmetric">#}
-{#        <div class="gn-menu-container">#}
-{#            {% include './topbar_left.html' %}#}
-{#        </div>#}
-{#     </nav>#}
-{#</div>#}
+<div style="background: #eceded">
+     <nav id="gn-brand-subnavbar" class="gn-menu gn-menu-symmetric">
+        <div class="gn-menu-container">
+            {% include './topbar_left.html' %}
+        </div>
+        <div class="gn-menu-content-center" style="margin-right: 8px">
+            {% block center_menu %}
+                {% include './search_bar.html' with search_bar_id='gn-search-bar' %}
+            {% endblock %}
+        </div>
+     </nav>
+</div>
 {% block extra_script %}
     <script type="text/javascript">
         (function() {

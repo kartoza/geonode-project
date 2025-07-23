@@ -1,1 +1,1 @@
--e git+https://github.com/kartoza/geonode.git@4.4.x#egg=GeoNode
+GeoNode==4.4.3

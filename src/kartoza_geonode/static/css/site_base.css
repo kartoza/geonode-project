@@ -53,7 +53,8 @@
 
 #gn-brand-subnavbar {
   background: #eceded;
-  padding: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
   min-height: unset;
 }
 
@@ -91,6 +92,15 @@
 
 #gn-brand-subnavbar .gn-menu-list li {
   margin-right: 1rem;
+}
+
+#gn-brand-subnavbar .gn-menu-list .dropdown-menu li {
+  margin-right: 0 !important;
+}
+
+#gn-brand-subnavbar .gn-menu-list .dropdown-menu a {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 #gn-brand-navbar .gn-primary,
@@ -176,12 +186,7 @@
 
 /* JUMBOTRON */
 #gn-hero {
-  background-image: url(/static/img/jumbotron.jpg);
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: rgb(156, 156, 156);
-  background-blend-mode: multiply;
+  height: auto;
 }
 
 .msgapi .gn-hero .jumbotron {
