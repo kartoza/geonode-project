@@ -1,0 +1,9 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Powered by"
+msgstr "Aangedreven door"
+
+msgid "Brought to you by"
+msgstr "Aangeboden door"
