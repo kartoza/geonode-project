@@ -35,6 +35,7 @@ def run_setup_hooks(*args, **kwargs):
 class AppConfig(BaseAppConfig):
     name = "kartoza_geonode"
     label = "kartoza_geonode"
+    verbose_name = "Kartoza geonode"
 
     def ready(self):
         super(AppConfig, self).ready()
