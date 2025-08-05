@@ -120,11 +120,9 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: ${COMPOSE_PROJECT_NAME}/geoserver:${GEOSERVER_BASE_IMAGE_VERSION}
+    image: meomancer/geoserver:2.24.4-geo-v2024.08.15
     build:
-      context: ../deployment/geoserver
-      args:
-        - BASE_IMAGE_VERSION=${GEOSERVER_BASE_IMAGE_VERSION}
+      context: ../deployment/geoserver-2.24.4
     container_name: ${COMPOSE_PROJECT_NAME}-geoserver
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -134,8 +132,6 @@ services:
       retries: 2
     env_file:
       - .env
-    environment:
-      - DATABASE_HOST=db-geodata
     ports:
       - "8080:8080"
     volumes:
@@ -146,24 +142,8 @@ services:
       - tmp:/tmp
     restart: unless-stopped
     depends_on:
-      data-dir-conf:
-        condition: service_healthy
       django:
         condition: service_healthy
-
-  data-dir-conf:
-    image: ${COMPOSE_PROJECT_NAME}/geoserver_data:${GEOSERVER_DATA_BASE_IMAGE_VERSION}
-    build:
-      context: ../deployment/geoserver_data
-      args:
-        - BASE_IMAGE_VERSION=${GEOSERVER_DATA_BASE_IMAGE_VERSION}
-    container_name: ${COMPOSE_PROJECT_NAME}-gsconf
-    entrypoint: sleep infinity
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
-    restart: unless-stopped
-    healthcheck:
-      test: "ls -A '/geoserver_data/data' | wc -l"
 
   db-geonode:
     <<: *default-common-db
