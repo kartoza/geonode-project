@@ -19,6 +19,9 @@ def validate_svg_or_image(value):
 class SitePreferences(SingletonModel):
     """Preference settings for project."""
 
+    # -------------------------------------
+    # ICONS
+    # -------------------------------------
     favicon = models.FileField(
         upload_to='site-preferences',
         null=True,
@@ -41,19 +44,49 @@ class SitePreferences(SingletonModel):
         validators=[validate_svg_or_image]
     )
 
+    # -------------------------------------
+    # COLORS
+    # -------------------------------------
+    text_color = ColorField(
+        default='#3E3E3E',
+        help_text=(
+            'Choose the text color for the site.'
+        )
+    )
+
     main_color = ColorField(
-        null=True,
-        blank=True,
+        default='#57A0C7',
         help_text=(
             'Choose the main color for the site.'
-            'Default is Kartoza blue'
+        )
+    )
+
+    secondary_color = ColorField(
+        default='#ECB44B',
+        help_text=(
+            'Choose the secondary color for the site.'
+        )
+    )
+
+    # -------------------------------------
+    # NAVBAR
+    # -------------------------------------
+    sub_navbar_color = ColorField(
+        default='#FFFFFF',
+        help_text=(
+            'Choose the text color for the sub navbar.'
+        )
+    )
+
+    sub_navbar_background_color = ColorField(
+        default='#57A0C7',
+        help_text=(
+            'Choose the background color for the sub navbar.'
         )
     )
 
     site_name = models.TextField(
-        null=True,
-        blank=True,
-        default='Kartoza GeoNode',
+        default='GeoNode',
         help_text=(
             'Choose the site name for navbar and on banners.'
         )

@@ -31,11 +31,11 @@
                     {% block left_menu %}
                     <ul class="gn-menu-list">
                         <li>
-                            <a href="/" style="display: flex; align-items: center; gap: 1rem">
+                            <a href="/" style="display: flex; align-items: center; gap: 0.5rem">
                                 {% if site_preferences.favicon %}
                                     <img src="{{ site_preferences.icon }}">
                                 {% else %}
-                                    <img src="{% static "/img/kartoza-logo-only.png" %}">
+                                    <img src="{% static "/img/geohosting.svg" %}">
                                 {% endif %}
 
                                 <span style="color: var(--project-color); font-size: 1.5rem; font-weight: 600">{{ site_preferences.site_name }}</span>
@@ -67,7 +67,8 @@
     </div>
 </div>
 <div style="background: #eceded">
-     <nav id="gn-brand-subnavbar" class="gn-menu gn-menu-symmetric">
+     <nav id="gn-brand-subnavbar" class="gn-menu gn-menu-symmetric"
+         style="background: {{ site_preferences.sub_navbar_background_color }}; color: {{ site_preferences.sub_navbar_color }}">
         <div class="gn-menu-container">
             {% include './topbar_left.html' %}
         </div>

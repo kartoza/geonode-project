@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load base_tags %}
 {% load markdownify %}
+{% load static %}
 
 {% if custom_theme.welcome_theme == 'JUMBOTRON_BG' or not slides %}
 {% if custom_theme.jumbotron_bg and custom_theme.jumbotron_bg.url %}
@@ -10,10 +11,11 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            {% if custom_theme.jumbotron_welcome_title or custom_theme.jumbotron_welcome_content %}
-                background-color: rgb(156, 156, 156);
-                background-blend-mode: multiply;
-            {% endif %}
+            background-color: rgb(156, 156, 156);
+            background-blend-mode: multiply;
+        }
+        #gn-hero .jumbotron {
+            min-height: 500px;
         }
     </style>
 {% endif %}
@@ -21,31 +23,23 @@
 {% endblock %}
 <div id="gn-hero" class="gn-hero">
     <div class="jumbotron">
-        <div class="gn-hero-description">
-            {% if not custom_theme.jumbotron_welcome_hide %}
-                {% if custom_theme.jumbotron_bg.url %}
-                    {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:""|template_trans %}
+        {% if not custom_theme.jumbotron_welcome_hide %}
+            {% if custom_theme.jumbotron_bg.url or custom_theme.jumbotron_welcome_title or custom_theme.jumbotron_welcome_content %}
+                <div class="gn-hero-description">
+                    {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"GeoNode"|template_trans %}
                         <h1>{% trans jumbotron_welcome_title %}</h1>
                     {% endwith %}
-                {% else %}
-                    {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Kartoza GeoNode"|template_trans %}
-                        <h1>{% trans jumbotron_welcome_title %}</h1>
+                    {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"sharing geospatial data and maps."|template_trans %}
+                        <p>{% trans jumbotron_welcome_content %}</p>
                     {% endwith %}
-                {% endif %}
-
-                {% if custom_theme.jumbotron_bg.url %}
-                    {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:""|template_trans %}
-                    <p>{% trans jumbotron_welcome_content %}</p>
-                    {% endwith %}
-                {% else %}
-                    {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"Kartoza GeoNode is a GeoNode web-based application, and platform for developing geospatial information systems (GIS) and for deploying spatial data infrastructures (SDI)."|template_trans %}
-                    <p>{% trans jumbotron_welcome_content %}</p>
-                    {% endwith %}
-                {% endif %}
+                </div>
+                <p class="gn-hero-tools">
+                </p>
+            {% else %}
+                <img src="{% static 'img/geohosting-jumbotron.svg' %}"
+                     alt="GeoNode" style="width: 100%;"/>
             {% endif %}
-        </div>
-        <p class="gn-hero-tools">
-        </p>
+        {% endif %}
     </div>
 </div>
 {% else %}
