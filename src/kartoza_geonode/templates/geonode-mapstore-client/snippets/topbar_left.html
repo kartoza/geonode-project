@@ -5,6 +5,14 @@
 {% get_base_right_topbar_menu as BASE_TOPBAR_MENU_RIGHT %}
 {% get_menu_json 'TOPBAR_MENU_RIGHT' as TOPBAR_MENU_RIGHT %}
 
+<style>
+  :root {
+    --project-color: {{ site_preferences.main_color }};
+    --project-secondary-color: {{ site_preferences.secondary_color }};
+    --gn-sub-navbar-color: {{ site_preferences.sub_navbar_color }};
+  }
+</style>
+
 <nav id="gn-brand-navbar-top-left" class="gn-menu gn-primary" data-gn-menu-resize="true">
     <div class="gn-menu-container">
         <div class="gn-menu-content">
