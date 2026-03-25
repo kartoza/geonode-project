@@ -1,2 +1,2 @@
-GeoNode==4.4.3
+GeoNode==5.0.1
 django-colorfield==0.14.0
