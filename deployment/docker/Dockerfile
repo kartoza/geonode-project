@@ -1,4 +1,4 @@
-FROM geonode/geonode-base:latest-ubuntu-22.04 AS prod
+FROM geonode/geonode-base:latest-ubuntu-24.04 AS prod
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/kartoza_geonode
@@ -7,8 +7,8 @@ RUN apt-get update -y && apt-get install curl wget unzip gnupg2 locales -y
 
 RUN sed -i -e 's/# C.UTF-8 UTF-8/C.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 # add bower and grunt command
 COPY src /usr/src/kartoza_geonode/
@@ -31,14 +31,11 @@ RUN chmod +x /usr/bin/celery-commands
 COPY src/celery-cmd /usr/bin/celery-cmd
 RUN chmod +x /usr/bin/celery-cmd
 
-# Install "geonode-contribs" apps
-# RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
-# Install logstash and centralized dashboard dependencies
-# RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
-#     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
-
 RUN yes w | pip install --src /usr/src -r requirements.txt &&\
     yes w | pip install -e .
+
+RUN pip uninstall -y django-geonode-mapstore-client
+RUN pip install git+https://github.com/kartoza/geonode-mapstore-client.git@5.0.x
 
 # Cleanup apt update lists
 RUN apt-get autoremove --purge &&\
