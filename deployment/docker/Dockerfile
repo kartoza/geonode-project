@@ -34,8 +34,10 @@ RUN chmod +x /usr/bin/celery-cmd
 RUN yes w | pip install --src /usr/src -r requirements.txt &&\
     yes w | pip install -e .
 
-RUN pip uninstall -y django-geonode-mapstore-client
-RUN pip install git+https://github.com/kartoza/geonode-mapstore-client.git@5.0.x
+# TODO:
+#   We will uncomment this if we need custom mapstore-client
+#   RUN pip uninstall -y django-geonode-mapstore-client
+#   RUN pip install git+https://github.com/kartoza/geonode-mapstore-client.git@5.0.x
 
 # Cleanup apt update lists
 RUN apt-get autoremove --purge &&\
