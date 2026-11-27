@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   actions: read
+  packages: write
   pull-requests: write
 
 concurrency:
@@ -18,7 +19,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: kartoza_geonode
+  # Must be lowercase for GHCR.
+  IMAGE_NAME: ghcr.io/kartoza/kartoza-geonode
+  ARTIFACT_PREFIX: kartoza-geonode
   ARTIFACT_RETENTION_DAYS: 7
 
 jobs:
@@ -35,6 +38,8 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
         run: |
           if [ "$MERGED" = "true" ]; then
             branch="$BASE_REF"
@@ -47,14 +52,22 @@ jobs:
           # Docker tags allow only [A-Za-z0-9_.-], must not start with '.' or '-', max 128 chars.
           safe_branch="$(echo "$branch" | sed -e 's/[^A-Za-z0-9_.-]/-/g' -e 's/^[.-]*//' | cut -c1-110)"
           tag="${safe_branch}-${short_sha}"
+          artifact="${ARTIFACT_PREFIX}-${tag}"
+          # PRs from forks get a read-only token, so they cannot push to GHCR.
+          if [ "$HEAD_REPO" = "$REPO" ]; then push=true; else push=false; fi
           {
             echo "branch=$branch"
             echo "sha=$sha"
             echo "tag=$tag"
             echo "image=${IMAGE_NAME}:${tag}"
-            echo "artifact=${IMAGE_NAME}-${tag}"
+            echo "artifact=$artifact"
+            echo "push=$push"
+            echo "outputs<<EOF"
+            echo "type=docker,dest=${RUNNER_TEMP}/${artifact}.tar"
+            if [ "$push" = "true" ]; then echo "type=image,push=true"; fi
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
-          echo "Image: ${IMAGE_NAME}:${tag}"
+          echo "Image: ${IMAGE_NAME}:${tag} (push to GHCR: $push)"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,7 +85,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build image
+      - name: Log in to GHCR
+        if: steps.meta.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -84,7 +105,8 @@ jobs:
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ steps.meta.outputs.sha }}
             org.opencontainers.image.ref.name=${{ steps.meta.outputs.branch }}
-          outputs: type=docker,dest=${{ runner.temp }}/${{ steps.meta.outputs.artifact }}.tar
+          # Writes the tarball for the artifact and, unless the PR is from a fork, pushes to GHCR.
+          outputs: ${{ steps.meta.outputs.outputs }}
 
       - name: Upload image artifact
         id: upload
@@ -105,12 +127,13 @@ jobs:
           BRANCH: ${{ steps.meta.outputs.branch }}
           SHA: ${{ steps.meta.outputs.sha }}
           MERGED: ${{ github.event.pull_request.merged }}
+          PUSHED: ${{ steps.meta.outputs.push }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
           UPLOAD_OUTCOME: ${{ steps.upload.outcome }}
         with:
           script: |
             const {
-              IMAGE, ARTIFACT_NAME, ARTIFACT_URL, BRANCH, SHA, MERGED,
+              IMAGE, ARTIFACT_NAME, ARTIFACT_URL, BRANCH, SHA, MERGED, PUSHED,
               BUILD_OUTCOME, UPLOAD_OUTCOME, ARTIFACT_RETENTION_DAYS,
             } = process.env;
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
@@ -130,12 +153,30 @@ jobs:
                 `| Artifact | [${ARTIFACT_NAME}](${ARTIFACT_URL}) (kept ${ARTIFACT_RETENTION_DAYS} days) |`,
                 `| Workflow run | ${runUrl} |`,
                 '',
-                'Load it locally:',
+              ];
+              if (PUSHED === 'true') {
+                body.push(
+                  'Pull it from GHCR:',
+                  '```bash',
+                  `docker pull ${IMAGE}`,
+                  '```',
+                  '',
+                  'Or load it from the artifact:',
+                );
+              } else {
+                body.push(
+                  '_Not pushed to GHCR: PRs from forks cannot write packages._',
+                  '',
+                  'Load it from the artifact:',
+                );
+              }
+              body.push(
                 '```bash',
                 `unzip ${ARTIFACT_NAME}.zip`,
                 `docker load -i ${ARTIFACT_NAME}.tar`,
                 '```',
-              ].join('\n');
+              );
+              body = body.join('\n');
             } else {
               body = [
                 `### :x: GeoNode image build failed (${trigger})`,
